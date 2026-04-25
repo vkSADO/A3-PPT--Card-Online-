@@ -1,11 +1,14 @@
 using Godot;
+using PPTservidor.Domain.Models;
 using System;
+using System.Text.Json;
 
 public partial class Lobby : Control
 {
     private NetworkManager _networkManager;
     private Label _statusLabel;
     private Button _findMatchButton;
+    private string _myPlayerId; // Adicione esta linha
 
     public override void _Ready()
     {
@@ -29,7 +32,8 @@ public partial class Lobby : Control
         // Como ainda não temos o login do Google pronto, 
         // vamos gerar um ID falso (Guid) para simular um jogador único neste teste.
         string myFakeId = Guid.NewGuid().ToString(); 
-        
+        _myPlayerId = myFakeId; // Armazena o ID gerado
+
         _statusLabel.Text = "Conectando ao servidor...";
         _findMatchButton.Disabled = true; // Impede que o jogador clique várias vezes
         
@@ -49,6 +53,22 @@ public partial class Lobby : Control
         GD.Print("Estado da partida recebido: " + matchStateJson);
         
         // TODO: Futuramente, aqui faremos a troca de cena para a "Mesa" do jogo
+
+        var match = JsonSerializer.Deserialize<MatchState>(matchStateJson);
+    
+        // Instancia a cena de jogo
+        var gameScene = GD.Load<PackedScene>("res://PPTcliente/Scenes/Game/game.tscn").Instantiate();
+        
+        // Obtém o MatchUI da cena instanciada
+        var matchUi = gameScene.GetNode<MatchUi>("UI/MatchUI");
+        
+        // Passa os IDs necessários (o ID do player deve ser o mesmo usado no FindMatch)
+        matchUi.Setup(match.MatchId, _myPlayerId); // Use a variável de instância
+
+        // Troca a cena
+        GetTree().Root.AddChild(gameScene);
+        GetTree().CurrentScene = gameScene;
+        this.QueueFree(); // Remove o Lobby
     }
     
     public override void _ExitTree()
