@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Godot;
 using PPTservidor.Domain.Enums;
 
 namespace PPTservidor.Domain.Models;
@@ -10,12 +12,21 @@ public class Player
 
     public int Score { get; set; } = 0;
     public List<CardType> Deck { get; set; } = new();
-    public List<CardType> Hand { get; set; } = new();
-
+    
     // Estado transitório do turno atual
     public CardType? SelectedCard { get; set; } // A carta real jogada virada para baixo
     public CardType? AnnouncedCard { get; set; } // A carta que o jogador DIZ ter jogado
     public bool HasAccusedBluff { get; set; } = false; // Se chamou o blefe do oponente neste turno
+
+    
+    public void InitializeDeck()
+    {
+        Deck.Clear();
+        for (int i = 0; i < 4; i++) Deck.Add(CardType.Rock);
+        for (int i = 0; i < 3; i++) Deck.Add(CardType.Paper);
+        for (int i = 0; i < 3; i++) Deck.Add(CardType.Scissors);
+        
+    }
 
     public void ResetTurnState()
     {

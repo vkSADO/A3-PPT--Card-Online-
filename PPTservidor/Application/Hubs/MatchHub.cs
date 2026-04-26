@@ -90,7 +90,7 @@ public class MatchHub : Hub
     }
 
     // 2. O cliente Godot chama este método quando o jogador escolhe a carta e o blefe
-    public async Task SubmitPlay(string matchId, string playerId, CardType realCard, CardType announcedCard)
+    public async Task SubmitPlay(string matchId, string playerId, CardType announcedCard)
     {
         // Validações iniciais
         if (string.IsNullOrWhiteSpace(matchId) || string.IsNullOrWhiteSpace(playerId))
@@ -116,7 +116,7 @@ public class MatchHub : Hub
             return;
         }
 
-        bool success = _matchService.SubmitPlay(matchId, playerId, realCard, announcedCard);
+        bool success = _matchService.SubmitPlay(matchId, playerId, announcedCard);
 
         if (success)
         {

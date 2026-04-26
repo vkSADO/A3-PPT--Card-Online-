@@ -15,20 +15,43 @@ public class MatchService
     private readonly ConcurrentDictionary<string, MatchState> _activeMatches = new();
 
     // 1. Inicialização da Partida
-    public MatchState StartNewMatch(Player player1, Player player2)
+    public MatchState StartNewMatch(Player p1, Player p2)
     {
-        var match = new MatchState
-        {
-            Player1 = player1,
-            Player2 = player2,
-            CurrentPhase = MatchPhase.AnnouncementPhase // Saltamos o DrawPhase para simplificar o MVP
-        };
+        p1.InitializeDeck();
+        p2.InitializeDeck();
 
-        InitializePlayerCards(player1);
-        InitializePlayerCards(player2);
+        var match = new MatchState { Player1 = p1, Player2 = p2 };
+        
+        StartRound(match); // Saca as cartas e inicia o turno
 
         _activeMatches.TryAdd(match.MatchId, match);
         return match;
+    }
+
+    // Saque de carta do deck
+    private void StartRound(MatchState match)
+    {
+        DrawCardForPlayer(match.Player1);
+        DrawCardForPlayer(match.Player2);
+        
+        match.CurrentPhase = MatchPhase.AnnouncementPhase;
+    }
+
+    private void DrawCardForPlayer(Player player)
+    {
+        if (player.Deck.Count > 0)
+        {
+            var rnd = new Random();
+            int index = rnd.Next(player.Deck.Count);
+            player.SelectedCard = player.Deck[index];
+            player.Deck.RemoveAt(index); // A carta é descartada [cite: 24]
+        }
+        else
+        {
+            // Se o deck acabar, perde 1 ponto por turno sem carta [cite: 24]
+            player.SelectedCard = null; 
+            player.Score -= 1;
+        }
     }
 
     public MatchState GetMatch(string matchId)
@@ -38,25 +61,18 @@ public class MatchService
     }
 
     // 2. Fase de Anúncio: O jogador escolhe a carta real e a carta que diz ter
-    public bool SubmitPlay(string matchId, string playerId, CardType realCard, CardType announcedCard)
+    public bool SubmitPlay(string matchId, string playerId, CardType announcedCard)
     {
         var match = GetMatch(matchId);
-        if (match == null || match.CurrentPhase != MatchPhase.AnnouncementPhase)
-            return false;
+        if (match == null || match.CurrentPhase != MatchPhase.AnnouncementPhase) return false;
 
         var player = match.GetPlayer(playerId);
-        if (player == null || player.SelectedCard.HasValue)
-            return false; // Jogador não existe ou já jogou neste turno
+        if (player == null || player.AnnouncedCard.HasValue) return false;
 
-        // Valida se o jogador tem a carta na mão e a consome
-        if (!player.Hand.Contains(realCard)) return false;
-        player.Hand.Remove(realCard);
-
-        player.SelectedCard = realCard;
         player.AnnouncedCard = announcedCard;
 
-        // Se ambos os jogadores já escolheram as suas cartas, o servidor avança a fase
-        if (match.Player1.SelectedCard != null && match.Player2.SelectedCard != null)
+        // Se ambos anunciaram, vai para a acusação
+        if (match.Player1.AnnouncedCard.HasValue && match.Player2.AnnouncedCard.HasValue)
         {
             match.CurrentPhase = MatchPhase.AccusationPhase;
         }
@@ -94,6 +110,14 @@ public class MatchService
 
         var p1 = match.Player1;
         var p2 = match.Player2;
+
+        // Se algum jogador não tem carta, pula a resolução normal
+        if (!p1.SelectedCard.HasValue || !p2.SelectedCard.HasValue)
+        {
+            // Já penalizou no DrawCardForPlayer
+            CheckWinCondition(match);
+            return;
+        }
 
         // 1. Indentifica quem blefou (A carta real e dirente da anunciada??)
         bool p1Bluffed = p1.SelectedCard != p1.AnnouncedCard;
@@ -169,6 +193,7 @@ public class MatchService
             // Limpar o estado do turno e voltar à fase de anúncio para a próxima ronda
             match.Player1.ResetTurnState();
             match.Player2.ResetTurnState();
+            StartRound(match); // Saca as cartas para a próxima ronda
             match.CurrentPhase = MatchPhase.AnnouncementPhase;
         }
     }
@@ -199,7 +224,6 @@ public class MatchService
         // Embaralha o baralho e distribui as cartas
         var shuffledDeck = deck.OrderBy(x => random.Next()).ToList();
         
-        player.Hand = shuffledDeck.Take(5).ToList();
         player.Deck = shuffledDeck.Skip(5).ToList();
     }
 }

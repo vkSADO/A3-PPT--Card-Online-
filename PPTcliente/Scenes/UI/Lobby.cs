@@ -63,7 +63,7 @@ public partial class Lobby : Control
         var matchUi = gameScene.GetNode<MatchUi>("UI/MatchUI");
         
         // Passa os IDs necessários (o ID do player deve ser o mesmo usado no FindMatch)
-        matchUi.Setup(match.MatchId, _myPlayerId); // Use a variável de instância
+        matchUi.Setup(match.MatchId, _myPlayerId, matchStateJson); // Use a variável de instância
 
         // Troca a cena
         GetTree().Root.AddChild(gameScene);

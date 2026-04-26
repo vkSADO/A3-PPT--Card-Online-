@@ -5,8 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://b16xel2csmlxn" path="res://Assets/Images/PedraCard.png" id="3_1gig3"]
 [ext_resource type="FontFile" uid="uid://dfuqw1av8jnee" path="res://Assets/Fonts/chomsky/Chomsky.otf" id="3_b8ulq"]
 [ext_resource type="Texture2D" uid="uid://b2vlf4p04lqlu" path="res://Assets/Images/verso4.png" id="4_2rqt0"]
+[ext_resource type="Texture2D" uid="uid://dmb2vuk5p2rhv" path="res://Assets/Images/TesouraCard.png" id="4_3ovvm"]
 [ext_resource type="FontFile" uid="uid://bsnhr1x0rkds" path="res://Assets/Fonts/sketch_gothic_school/Sketch Gothic School.ttf" id="4_6hc5w"]
 [ext_resource type="Texture2D" uid="uid://dqj10kkrg7nd" path="res://Assets/Images/PapelCard.png" id="5_3ovvm"]
+[ext_resource type="Texture2D" uid="uid://c8yf8q4lq75dd" path="res://Assets/Images/verso.png" id="5_dpw1s"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6hc5w"]
 font = ExtResource("3_b8ulq")
@@ -25,7 +27,7 @@ font = ExtResource("3_b8ulq")
 font_size = 100
 font_color = Color(0, 0, 0, 1)
 
-[node name="MatchUI" type="Control" unique_id=1639320269 node_paths=PackedStringArray("_playerName1", "_playerName2", "_scorePlayer1", "_scorePlayer2", "_quatityCardDeck", "_labelLog", "_btnPedra", "_btnPapel", "_btnTesoura", "_btnAccuser", "_btnAnnuncement", "_btnFinilized", "_panelCardAccused")]
+[node name="MatchUI" type="Control" unique_id=1639320269 node_paths=PackedStringArray("_playerName1", "_playerName2", "_scorePlayer1", "_scorePlayer2", "_quatityCardDeck", "_labelLog", "_btnPedra", "_btnPapel", "_btnTesoura", "_btnAccuser", "_btnAnnuncement", "_btnFinilized", "_panelCardAccused", "_CardSelectedTextureArea", "_OpponentSelectedTextureArea")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,6 +35,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_a5def")
+CardTextures = Array[Texture2D]([ExtResource("3_1gig3"), ExtResource("5_3ovvm"), ExtResource("4_3ovvm"), ExtResource("5_dpw1s")])
 _playerName1 = NodePath("WorkStation/GameAreaContainer/PanelContainer/Spacebar/PlayerPerfilContainer1/VBoxContainer/Player01_Name")
 _playerName2 = NodePath("WorkStation/GameAreaContainer/PanelContainer/Spacebar/PlayerPerfilContainer2/VBoxContainer/Player02_Name")
 _scorePlayer1 = NodePath("WorkStation/GameAreaContainer/PanelContainer/Spacebar/PlayerPerfilContainer1/VBoxContainer/ScoreP1")
@@ -46,6 +49,8 @@ _btnAccuser = NodePath("WorkStation/ActionButtonsContainer/AccusedButton")
 _btnAnnuncement = NodePath("WorkStation/ActionButtonsContainer/BluffedButton")
 _btnFinilized = NodePath("WorkStation/ActionButtonsContainer/FinalizedButton")
 _panelCardAccused = NodePath("WorkStation/GameAreaContainer/HBoxContainer/PanelCardAccused")
+_CardSelectedTextureArea = NodePath("WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer/CardContainerPlayer1/CenterContainer/MyCardTexture")
+_OpponentSelectedTextureArea = NodePath("WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer/CardContainerPlayer2/CenterContainer/OpponentCard")
 
 [node name="WorkStation" type="VBoxContainer" parent="." unique_id=1413372722]
 layout_mode = 1
@@ -250,10 +255,9 @@ horizontal_alignment = 1
 [node name="CenterContainer" type="CenterContainer" parent="WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer/CardContainerPlayer1" unique_id=1876665447]
 layout_mode = 2
 
-[node name="CardArea" type="TextureRect" parent="WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer/CardContainerPlayer1/CenterContainer" unique_id=201858586]
+[node name="MyCardTexture" type="TextureRect" parent="WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer/CardContainerPlayer1/CenterContainer" unique_id=201858586]
 custom_minimum_size = Vector2(210.5, 316)
 layout_mode = 2
-texture = ExtResource("3_1gig3")
 expand_mode = 1
 
 [node name="CardContainerPlayer2" type="VBoxContainer" parent="WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer" unique_id=1994451220]
@@ -268,10 +272,9 @@ horizontal_alignment = 1
 [node name="CenterContainer" type="CenterContainer" parent="WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer/CardContainerPlayer2" unique_id=1244610032]
 layout_mode = 2
 
-[node name="CardArea" type="TextureRect" parent="WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer/CardContainerPlayer2/CenterContainer" unique_id=691267011]
+[node name="OpponentCard" type="TextureRect" parent="WorkStation/GameAreaContainer/HBoxContainer/Panel/HBoxContainer/CardContainerPlayer2/CenterContainer" unique_id=691267011]
 custom_minimum_size = Vector2(210.5, 316)
 layout_mode = 2
-texture = ExtResource("3_1gig3")
 expand_mode = 1
 
 [node name="VS_Icon" type="Label" parent="WorkStation/GameAreaContainer/HBoxContainer/Panel" unique_id=482019780]
